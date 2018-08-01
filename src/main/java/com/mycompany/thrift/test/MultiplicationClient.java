@@ -14,9 +14,10 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
+import org.apache.thrift.transport.TTransportException;
 
 public class MultiplicationClient {
-     public static void main(String [] args) {
+    public static void main(String [] args) {
 
    
     try {
@@ -28,25 +29,43 @@ public class MultiplicationClient {
       TProtocol protocol = new  TBinaryProtocol(transport);
       MultiplicationService.Client client = new MultiplicationService.Client(protocol);
 
-      perform(client);
-      perform2(client);
-
+      multiple(client);
+      add(client);
+      add(client);
+      add(client);
+      add(client);
       transport.close();
+      test();
+      test();
+
     } catch (TException x) {
       x.printStackTrace();
     } 
   }
 
-  private static void perform(MultiplicationService.Client client) throws TException
+  private static void multiple(MultiplicationService.Client client) throws TException
   {
    
     int product = client.multiply(3,7);
     System.out.println("3*7=" + product);
   }
   
-  private static void perform2(MultiplicationService.Client client) throws TException{
-      int product = client.multiply(2, 3);
-      System.out.println("2*3=" + product);
+  private static void add(MultiplicationService.Client client) throws TException{
+      int sum = client.add(2, 3);
+      System.out.println("2 + 3=" + sum);
 
+  }
+  
+  private static void test() throws TException {
+	  TTransport transport;
+	     
+      transport = new TSocket("localhost", 9090);
+      transport.open();
+
+      TProtocol protocol = new  TBinaryProtocol(transport);
+      MultiplicationService.Client client = new MultiplicationService.Client(protocol);
+      int sum = client.add(2, 3);
+      System.out.println("2 + 3=" + sum);
+      transport.close();
   }
 }

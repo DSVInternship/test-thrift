@@ -27,7 +27,7 @@ public class MultiplicationServer {
 
       Runnable simple = new Runnable() {
         public void run() {
-          simple(processor);
+          simpleServer(processor);
         }
       };      
      
@@ -37,7 +37,7 @@ public class MultiplicationServer {
     }
   }
 
-  public static void simple(MultiplicationService.Processor processor) {
+  public static void simpleServer(MultiplicationService.Processor processor) {
     try {
       TServerTransport serverTransport = new TServerSocket(9090);
       TServer server = new TSimpleServer(new Args(serverTransport).processor(processor));
