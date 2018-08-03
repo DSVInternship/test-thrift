@@ -15,6 +15,14 @@ import org.apache.thrift.TException;
 public class MainServer {
 
     public static void main(String[] args) throws InterruptedException, TException {
+    	// start thrift server. PORT 9090. can run seperate file
+        ThriftServer thriftServer = new ThriftServer();
+        new Thread() {
+            public void run() {
+                thriftServer.startServer();
+            }
+        }.start();
+        
         // start jetty server. PORT 8080
         JettyServer jettyServer = new JettyServer();
         Runnable simple = new Runnable() {
@@ -24,17 +32,12 @@ public class MainServer {
         };
 
         new Thread(simple).start();
-
-        // start thrift server. PORT 9090
-        ThriftServer thriftServer = new ThriftServer();
-        new Thread() {
-            public void run() {
-                thriftServer.startServer();
-            }
-        }.start();
         
-        // queing model
+        // queing model. Yeu cau thrift server da duoc start
         QueingModel queingModel = QueingModel.getInstance();
         queingModel.startQueingModel();
+        
+      
+        
     }
 }

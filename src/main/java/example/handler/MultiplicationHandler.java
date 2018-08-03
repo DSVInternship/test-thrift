@@ -5,7 +5,6 @@
  */
 package example.handler;
 
-import example.client.MultiplicationClient;
 import example.thrift.MultiplicationService;
 import org.apache.thrift.TException;
 

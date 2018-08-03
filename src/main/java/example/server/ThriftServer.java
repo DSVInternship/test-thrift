@@ -10,7 +10,9 @@ package example.server;
  * @author root
  */
 import example.handler.MultiplicationHandler;
+import example.handler.ProfileServiceHandler;
 import example.thrift.MultiplicationService;
+import example.thrift.ProfileService;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TServer.Args;
 import org.apache.thrift.server.TSimpleServer;
@@ -19,14 +21,14 @@ import org.apache.thrift.transport.TServerTransport;
 
 public class ThriftServer {
 
-    public MultiplicationHandler handler;
+    public ProfileServiceHandler handler;
 
-    public MultiplicationService.Processor processor;
+    public ProfileService.Processor processor;
 
     public void startServer() {
         try {
-            handler = new MultiplicationHandler();
-            processor = new MultiplicationService.Processor(handler);
+            handler = new ProfileServiceHandler();
+            processor = new ProfileService.Processor(handler);
             simpleServer(processor);
 //            Runnable simple = new Runnable() {
 //                public void run() {
@@ -40,7 +42,7 @@ public class ThriftServer {
         }
     }
 
-    private void simpleServer(MultiplicationService.Processor processor) {
+    private void simpleServer(ProfileService.Processor processor) {
         try {
             TServerTransport serverTransport = new TServerSocket(9090);
             TServer server = new TSimpleServer(new Args(serverTransport).processor(processor));
@@ -51,5 +53,14 @@ public class ThriftServer {
             e.printStackTrace();
         }
     }
-
+    
+    public static void main(String[] args) {
+      ThriftServer thriftServer = new ThriftServer();
+      new Thread() {
+          public void run() {
+              thriftServer.startServer();
+          }
+      }.start();
+	}
+    
 }

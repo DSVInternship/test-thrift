@@ -7,13 +7,12 @@ typedef i64 long
 	User Profile struct
 */
 struct Profile {
-	1:long id,
-	2:string name,
-	3:int age
+	1: long id,
+	2: string name,
+	3: int age
 }
-struct stuent 
 
-struct TGetProfileRes 
+struct TGetProfileResult 
 {
 	1: required i64 err,
 	2: optional Profile profile,	

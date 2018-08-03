@@ -9,71 +9,99 @@ package example.db;
  *
  * @author root
  */
-import example.model.UserDTO;
+import example.thrift.Profile;
 import example.util.ByteConverter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import kyotocabinet.*;
+import org.apache.thrift.TException;
 
-public class KCDBEX1 {
+public class ProfileDAO {
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    public boolean insert(Profile profile) throws IOException {
+        //System.out.println("profile insert " + profile);
+        DB db = KyotoCabinetConnection.getConnection("profile.kch");
+        db.set(ByteConverter.convertToBytes(profile.getId()), ByteConverter.convertToBytes(profile));
+        KyotoCabinetConnection.closeConnection(db);
+        return true;
+    }
 
-        // create the object
-        DB db = new DB();
-        long start = System.currentTimeMillis();
-        // open the database
-        if (!db.open("casket.kch", DB.OWRITER | DB.OCREATE)) {
-            System.err.println("open error: " + db.error());
-        }
-        System.out.println("time to open connection: " + (System.currentTimeMillis() - start));
-        UserDTO dto1 = new UserDTO(1, "nhat", 23);
-        UserDTO dto2 = new UserDTO(2, "test", 3);
-        // store records
-//        if (!db.set("foo", "hop")
-//                || !db.set("bar", "step")
-//                || !db.set("baz", "jump")) {
-//            System.err.println("set error: " + db.error());
-//        }
+    public Profile get(long id) throws IOException, ClassNotFoundException {
+        //System.out.println("Profile get " + id);
+        DB db = KyotoCabinetConnection.getConnection("profile.kch");
+        byte[] byteProfile = db.get(ByteConverter.convertToBytes(id));
+        if(byteProfile == null)
+        	return null;
+        Profile profile = (Profile) ByteConverter.convertFromBytes(byteProfile);
+        KyotoCabinetConnection.closeConnection(db);
+        return profile;
+    }
 
-        if (!db.set("1".getBytes(), ByteConverter.convertToBytes(dto1))
-                || !db.set("2".getBytes(), ByteConverter.convertToBytes(dto2))) {
-            System.err.println("set error: " + db.error());
+    public boolean update(Profile profile) throws TException, IOException {
+       // System.err.println("profile update " + profile);
+        DB db = KyotoCabinetConnection.getConnection("profile.kch");
+        boolean result = db.replace(ByteConverter.convertToBytes(profile.getId()), ByteConverter.convertToBytes(profile));
+        KyotoCabinetConnection.closeConnection(db);
+        return result;
+    }
 
-        };
+    public boolean remove(long id) throws TException, IOException {
+       // System.out.println("profile remove");
+        DB db = KyotoCabinetConnection.getConnection("profile.kch");
+        boolean result = db.remove(ByteConverter.convertToBytes(id));
+        KyotoCabinetConnection.closeConnection(db);
+        return result;
+    }
 
-        // retrieve records
-        String value = db.get("foo");
-        if (value != null) {
-            System.out.println(value);
-        } else {
-            System.err.println("set error: " + db.error());
-        }
-        
-        UserDTO vDTO1 = (UserDTO)ByteConverter.convertFromBytes(db.get("2".getBytes()));
-        if (vDTO1 != null) {
-            System.out.println(vDTO1);
-        } else {
-            System.err.println("set error: " + db.error());
-        }
-
-        // traverse records
+    public List<Profile> getAll() throws IOException, ClassNotFoundException {
+        List<Profile> result = new ArrayList<>();
+        Profile tmp;
+        DB db = KyotoCabinetConnection.getConnection("profile.kch");
         Cursor cur = db.cursor();
         cur.jump();
-//        String[] rec;
-//        while ((rec = cur.get_str(true)) != null) {
-//            System.out.println(rec[0] + ":" + rec[1]);
-//        }
-        
         byte[][] recByte;
-        while((recByte = cur.get(true)) != null){
-            System.out.println(new String(recByte[0]) + ":" + ByteConverter.convertFromBytes(recByte[1]));
+        while ((recByte = cur.get(true)) != null) {
+        	tmp = (Profile)ByteConverter.convertFromBytes(recByte[1]);
+        	result.add(tmp);
+            //System.out.println((ByteConverter.convertFromBytes(recByte[0])) + ":" + ByteConverter.convertFromBytes(recByte[1]));
         }
         cur.disable();
-        
-        // close the database
-        if (!db.close()) {
-            System.err.println("close error: " + db.error());
-        }
+        KyotoCabinetConnection.closeConnection(db);
+        return result;
+    }
 
+    public static void main(String[] args) throws IOException, ClassNotFoundException, TException {
+        ProfileDAO dao = new ProfileDAO();
+        Profile dto1 = new Profile(1, "Ac", 1);
+        Profile dto2 = new Profile(2, "a", 2);
+        Profile dto3 = new Profile(3, "b", 3);
+        Profile dto4 = new Profile(4, "d", 4);
+        Profile dto5 = new Profile(5, "a", 5);
+        
+        dao.insert(dto1);
+        dao.insert(dto2);
+        dao.insert(dto3);
+        dao.insert(dto4);
+        dao.insert(dto5);
+        
+        System.out.println("get id 1: " + dao.get(1l));
+        System.out.println("get id 2: " + dao.get(2l));
+        System.out.println("\nget all\n");
+        for(Profile xProfile: dao.getAll()){
+            System.out.println(xProfile);
+        };
+        
+        // delete 
+        dao.remove(5l);
+        dao.remove(3l);
+        
+        // update 
+        dto1.setAge(200);
+        dao.update(dto1);
+         System.out.println("\nget all after remove and update\n");
+        for(Profile xProfile: dao.getAll()){
+            System.out.println(xProfile);
+        };
     }
 }
