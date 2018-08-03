@@ -5,7 +5,6 @@
  */
 package example.model;
 
-import example.client.MultiplicationClient;
 import example.client.ProfileClient;
 import example.thrift.Profile;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -21,13 +20,11 @@ public class QueingModel {
 
     private static QueingModel instance = null;
     private BlockingQueue<Job> jobQueue;// = new ArrayBlockingQueue<Job>(5);
-    private MultiplicationClient workerMul;// = new MultiplicationClient();
     private ProfileClient workerClient;
     // private List<Worker> list ;
 
     private QueingModel() {
         jobQueue = new ArrayBlockingQueue<Job>(5);
-        workerMul = new MultiplicationClient();
         workerClient = new ProfileClient();
     }
 
@@ -72,14 +69,6 @@ public class QueingModel {
             method = job.getMethod();
             data = job.getData();
             switch (method) {
-                case "add":
-                    Profile dtoAdd = (Profile) data;
-                    workerMul.add((int)dtoAdd.getId(), dtoAdd.getAge());
-                    break;
-                case "multiply":
-                    Profile dtoMul = (Profile) data;
-                    workerMul.multiple((int)dtoMul.getId(), dtoMul.getAge());
-                    break;
                 /*
                     Profile service
                 */

@@ -9,10 +9,13 @@ package example.db;
  *
  * @author root
  */
+import example.thrift.ErrorType;
 import example.thrift.Profile;
+import example.thrift.TGetProfileResult;
 import example.util.ByteConverter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import kyotocabinet.*;
 import org.apache.thrift.TException;
@@ -27,15 +30,20 @@ public class ProfileDAO {
         return true;
     }
 
-    public Profile get(long id) throws IOException, ClassNotFoundException {
+    public TGetProfileResult get(long id) throws IOException, ClassNotFoundException {
         //System.out.println("Profile get " + id);
         DB db = KyotoCabinetConnection.getConnection("profile.kch");
         byte[] byteProfile = db.get(ByteConverter.convertToBytes(id));
+        TGetProfileResult result ;
         if(byteProfile == null)
-        	return null;
+        	return new TGetProfileResult(ErrorType.NOT_FOUND.getValue());
         Profile profile = (Profile) ByteConverter.convertFromBytes(byteProfile);
         KyotoCabinetConnection.closeConnection(db);
-        return profile;
+        result = new TGetProfileResult();
+        result.setErr(ErrorType.SUCCESS.getValue());
+        result.setProfile(Arrays.asList(profile));
+        
+        return result;
     }
 
     public boolean update(Profile profile) throws TException, IOException {
@@ -54,8 +62,9 @@ public class ProfileDAO {
         return result;
     }
 
-    public List<Profile> getAll() throws IOException, ClassNotFoundException {
-        List<Profile> result = new ArrayList<>();
+    public TGetProfileResult getAll() throws IOException, ClassNotFoundException {
+    	TGetProfileResult result = null;
+        List<Profile> profiles = new ArrayList<>();
         Profile tmp;
         DB db = KyotoCabinetConnection.getConnection("profile.kch");
         Cursor cur = db.cursor();
@@ -63,11 +72,15 @@ public class ProfileDAO {
         byte[][] recByte;
         while ((recByte = cur.get(true)) != null) {
         	tmp = (Profile)ByteConverter.convertFromBytes(recByte[1]);
-        	result.add(tmp);
+        	profiles.add(tmp);
             //System.out.println((ByteConverter.convertFromBytes(recByte[0])) + ":" + ByteConverter.convertFromBytes(recByte[1]));
         }
         cur.disable();
         KyotoCabinetConnection.closeConnection(db);
+        
+        result = new TGetProfileResult();
+        result.setErr(ErrorType.SUCCESS.getValue());
+        result.setProfile(profiles);
         return result;
     }
 
@@ -88,7 +101,7 @@ public class ProfileDAO {
         System.out.println("get id 1: " + dao.get(1l));
         System.out.println("get id 2: " + dao.get(2l));
         System.out.println("\nget all\n");
-        for(Profile xProfile: dao.getAll()){
+        for(Profile xProfile: dao.getAll().getProfile()){
             System.out.println(xProfile);
         };
         
@@ -100,7 +113,7 @@ public class ProfileDAO {
         dto1.setAge(200);
         dao.update(dto1);
          System.out.println("\nget all after remove and update\n");
-        for(Profile xProfile: dao.getAll()){
+        for(Profile xProfile: dao.getAll().getProfile()){
             System.out.println(xProfile);
         };
     }

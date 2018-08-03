@@ -8,6 +8,7 @@ package example.handler;
 import example.db.ProfileDAO;
 import example.thrift.Profile;
 import example.thrift.ProfileService;
+import example.thrift.TGetProfileResult;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,7 +24,7 @@ public class ProfileServiceHandler implements ProfileService.Iface {
     private ProfileDAO dao = new ProfileDAO();
 
     @Override
-    public Profile get(long id) throws TException {
+    public TGetProfileResult get(long id) throws TException {
         System.out.println("invoke get hanlder");
         try {
             return dao.get(id);
@@ -68,7 +69,7 @@ public class ProfileServiceHandler implements ProfileService.Iface {
     }
 
     @Override
-    public List<Profile> getAll() throws TException {
+    public TGetProfileResult getAll() throws TException {
         try {
             return dao.getAll();
         } catch (ClassNotFoundException | IOException e) {

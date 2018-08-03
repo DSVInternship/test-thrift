@@ -19,8 +19,11 @@ import com.sun.research.ws.wadl.Application;
 import example.client.ProfileClient;
 import example.model.Job;
 import example.model.QueingModel;
+import example.thrift.ErrorType;
 import example.thrift.Profile;
+import example.thrift.TGetProfileResult;
 import example.util.LRU;
+import java.util.Arrays;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -63,12 +66,16 @@ public class ProfileREST {
     @Path("/{id}")
     public String get(@PathParam("id") long id) throws TException, InterruptedException {
         Profile profile = null; //profileClient.get(id);
+        TGetProfileResult tProfileResult = null;
         LinkedList<Profile> cache = LRU.getInstace().getCache();
         // neu tim thay trong cache
         for (Profile tmp : cache) {
             if (tmp.getId() == id) {
                 System.out.println("lay tu LRU cache");
                 profile = tmp;
+                tProfileResult = new TGetProfileResult();
+                tProfileResult.setErr(ErrorType.SUCCESS.getValue());
+                tProfileResult.setProfile(Arrays.asList(profile));
                 LRU.getInstace().refer(tmp); // cap nhat lai vi tri cua tmp
                 break;
             }
@@ -76,19 +83,22 @@ public class ProfileREST {
 
         if (profile == null) {
             System.out.println("lay tu database");
-            profile = profileClient.get(id);
-            LRU.getInstace().refer(profile);
+            tProfileResult = profileClient.get(id);
+            if (tProfileResult.getErr() == ErrorType.SUCCESS.getValue()) {
+                LRU.getInstace().refer(tProfileResult.getProfile().get(0));
+            }
         }
-        if (profile != null) {
-            return profile.toString();
-        } else {
-            return "Not found!";
-        }
+//        if (profile != null) {
+//            return profile.toString();
+//        } else {
+//            return "Not found!";
+//        }
+        return tProfileResult.toString();
     }
 
     @GET
     public String getAll() throws TException, InterruptedException {
-        List<Profile> profile = profileClient.getAll();
+    	TGetProfileResult profile = profileClient.getAll();
         if (profile != null) {
             return profile.toString();
         } else {
@@ -138,7 +148,7 @@ public class ProfileREST {
     public String update(@PathParam("id") long id, @FormParam("name") String name, @FormParam("age") int age)
             throws TException, InterruptedException {
         QueingModel queingModel = QueingModel.getInstance();
-        Profile oldDto = profileClient.get(id);
+        Profile oldDto = profileClient.get(id).getProfile().get(0);
         Profile updatedDto = new Profile(id, name, age);
         LRU.getInstace().refer(oldDto, updatedDto);
         Job job = new Job("profile.update", updatedDto);
@@ -149,7 +159,7 @@ public class ProfileREST {
     @DELETE
     @Path("/{id}")
     public String delete(@PathParam("id") long id) throws TException, InterruptedException {
-        Profile oldDto = profileClient.get(id);
+        Profile oldDto = profileClient.get(id).getProfile().get(0);
         LRU.getInstace().remove(oldDto);
         QueingModel queingModel = QueingModel.getInstance();
         Job job = new Job("profile.remove", id);

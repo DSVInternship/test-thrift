@@ -7,6 +7,7 @@ package example.client;
 
 import example.thrift.Profile;
 import example.thrift.ProfileService;
+import example.thrift.TGetProfileResult;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,7 +23,36 @@ import org.apache.thrift.transport.TTransport;
  */
 public class ProfileClient {
     
-     public List<Profile> getAll() throws TException {
+//     public TGetProfileResult getAll() throws TException {
+//        long start = System.currentTimeMillis();
+//        try (TTransport transport = new TSocket("localhost", 9090)){
+//            transport.open();
+//            TProtocol protocol = new TBinaryProtocol(transport);
+//            ProfileService.Client client = new ProfileService.Client(protocol);
+//            System.err.println("time to create socket: " + (System.currentTimeMillis() - start));
+//
+//            TGetProfileResult profileRes = client.getAll();
+//            
+//            return profileRes;
+//        }
+//    }
+	
+	 public TGetProfileResult getAll() throws TException {
+	        long start = System.currentTimeMillis();
+	 
+	        	TTransport transport = new TSocket("localhost", 9090);
+	            transport.open();
+	            TProtocol protocol = new TBinaryProtocol(transport);
+	            ProfileService.Client client = new ProfileService.Client(protocol);
+	            System.err.println("time to create socket: " + (System.currentTimeMillis() - start));
+
+	            TGetProfileResult profileRes = client.getAll();
+	            
+	            return profileRes;
+	        
+	    }
+
+    public TGetProfileResult get(long id) throws TException {
         long start = System.currentTimeMillis();
         try (TTransport transport = new TSocket("localhost", 9090)){
             transport.open();
@@ -30,20 +60,7 @@ public class ProfileClient {
             ProfileService.Client client = new ProfileService.Client(protocol);
             System.err.println("time to create socket: " + (System.currentTimeMillis() - start));
 
-            List<Profile> profileRes = client.getAll();
-            return profileRes;
-        }
-    }
-
-    public Profile get(long id) throws TException {
-        long start = System.currentTimeMillis();
-        try (TTransport transport = new TSocket("localhost", 9090)){
-            transport.open();
-            TProtocol protocol = new TBinaryProtocol(transport);
-            ProfileService.Client client = new ProfileService.Client(protocol);
-            System.err.println("time to create socket: " + (System.currentTimeMillis() - start));
-
-            Profile profileRes = client.get(id);
+            TGetProfileResult profileRes = client.get(id);
             return profileRes;
         }
     }

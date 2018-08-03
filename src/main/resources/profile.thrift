@@ -12,23 +12,20 @@ struct Profile {
 	3: int age
 }
 
+enum ErrorType {
+    SUCCESS = 0,       
+    NOT_FOUND = -1,
+} 
+
 struct TGetProfileResult 
 {
 	1: required i64 err,
-	2: optional Profile profile,	
+	2: optional list<Profile> profile,	
 }
 
 service ProfileService {
-	list<Profile> getAll(),
-	Profile get(1:long id),
-	bool insert(1:Profile profile),
-	bool update(1:Profile profile),
-	bool remove(1:long id),
-}
-
-service ProfileExtService {
-	list<Profile> getAll(),
-	Profile get(1:long id),
+	TGetProfileResult getAll(),
+	TGetProfileResult get(1:long id),
 	bool insert(1:Profile profile),
 	bool update(1:Profile profile),
 	bool remove(1:long id),
