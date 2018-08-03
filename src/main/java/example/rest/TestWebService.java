@@ -37,7 +37,7 @@ public class TestWebService {
     public String add(@QueryParam("a") int a,
             @QueryParam("b") int b) throws TException, InterruptedException {
         QueingModel queingModel = QueingModel.getInstance();
-        UserDTO dto = new UserDTO(a, b);
+        UserDTO dto = new UserDTO(a,"nhat", b);
         Job job = new Job("add", dto);
         queingModel.putJob(job);
         return "Sent!";
@@ -48,7 +48,7 @@ public class TestWebService {
     public String multiply(@QueryParam("a") int a,
             @QueryParam("b") int b) throws TException, InterruptedException {
         QueingModel queingModel = QueingModel.getInstance();
-        UserDTO dto = new UserDTO(a, b);
+        UserDTO dto = new UserDTO(a,"nhat", b);
         Job job = new Job("multiply", dto);
         queingModel.putJob(job);
         return "Sent!";
@@ -61,8 +61,19 @@ public class TestWebService {
             @QueryParam("b") int b) throws InterruptedException {
         // final AsyncResponse asyncResponse = suspended.take();
         QueingModel queingModel = QueingModel.getInstance();
-        UserDTO dto = new UserDTO(a, b);
+        UserDTO dto = new UserDTO(a,"nhat", b);
         Job job = new Job("add", dto);
+        queingModel.putJob(job);
+        return "Sent!";
+    }
+    
+    @GET
+    @Path("/insert")
+    public String add(@QueryParam("name") String name,
+            @QueryParam("age") int age) throws TException, InterruptedException {
+        QueingModel queingModel = QueingModel.getInstance();
+        UserDTO dto = new UserDTO(System.currentTimeMillis(), name, age);
+        Job job = new Job("insert", dto);
         queingModel.putJob(job);
         return "Sent!";
     }

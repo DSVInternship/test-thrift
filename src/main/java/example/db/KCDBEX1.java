@@ -20,14 +20,14 @@ public class KCDBEX1 {
 
         // create the object
         DB db = new DB();
-
+        long start = System.currentTimeMillis();
         // open the database
         if (!db.open("casket.kch", DB.OWRITER | DB.OCREATE)) {
             System.err.println("open error: " + db.error());
         }
-
-        UserDTO dto1 = new UserDTO(1, 2);
-        UserDTO dto2 = new UserDTO(2, 2);
+        System.out.println("time to open connection: " + (System.currentTimeMillis() - start));
+        UserDTO dto1 = new UserDTO(1, "nhat", 23);
+        UserDTO dto2 = new UserDTO(2, "test", 3);
         // store records
 //        if (!db.set("foo", "hop")
 //                || !db.set("bar", "step")

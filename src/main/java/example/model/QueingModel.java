@@ -70,11 +70,11 @@ public class QueingModel {
             switch (method) {
                 case "add":
                     UserDTO dtoAdd = (UserDTO) data;
-                    worker.add(dtoAdd.getA(), dtoAdd.getB());
+                    worker.add((int)dtoAdd.getId(), dtoAdd.getAge());
                     break;
                 case "multiply":
                     UserDTO dtoMul = (UserDTO) data;
-                    worker.multiple(dtoMul.getA(), dtoMul.getB());
+                    worker.multiple((int)dtoMul.getId(), dtoMul.getAge());
                     break;
                 default:
                     System.out.println("Default case");
