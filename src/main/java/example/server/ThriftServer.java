@@ -41,7 +41,6 @@ public class ThriftServer {
 //            };
 //
 //            new Thread(simple).start();
-            System.out.println("Starting thrift server at port 9090");
 
         } catch (Exception x) {
             x.printStackTrace();
@@ -54,6 +53,7 @@ public class ThriftServer {
             TServer server = new TSimpleServer(new Args(serverTransport).processor(processor));
             //TServer server = new TThreadPoolServer(new Args(serverTransport).processor(processor));
             
+            System.out.println("Starting thrift server at port 9090");
 
             server.serve();
         } catch (Exception e) {
@@ -69,7 +69,10 @@ public class ThriftServer {
         options.minWorkerThreads = 10;
         options.processor(processor);
         options.protocolFactory(proFactory);
+        
         TServer server = new TThreadPoolServer(options);
+        System.out.println("Starting thrift server at port 9090");
+
         server.serve();
        }catch(Exception e) {
     	   e.printStackTrace();

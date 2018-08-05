@@ -6,6 +6,8 @@
 package example.server;
 
 import example.model.QueingModel;
+import example.util.TTransprotPooling;
+
 import org.apache.thrift.TException;
 
 /**
@@ -35,9 +37,20 @@ public class MainServer {
         
         // queing model. Yeu cau thrift server da duoc start
         QueingModel queingModel = QueingModel.getInstance();
-        queingModel.startQueingModel();
+        new Thread() {
+        	public void run() {
+        		try {
+					queingModel.startQueingModel();
+				} catch (InterruptedException | TException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}        		
+        	}
+        }.start();
         
+        // start connection pooling 
+        TTransprotPooling.getInstace().config(2, "localhost", 9090);
       
-        
+        System.out.println("number connection pooling: " + TTransprotPooling.getInstace().getNumberFreeConnection());
     }
 }
