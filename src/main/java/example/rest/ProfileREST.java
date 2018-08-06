@@ -15,6 +15,8 @@ import example.model.Job;
 import example.model.QueingModel;
 import example.rest.response.ProfileResponse;
 import example.rest.response.ProfileResultResponse;
+import example.test.StatisticDTO;
+import example.test.TestPerformance;
 import example.thrift.ErrorType;
 import example.thrift.Profile;
 import example.thrift.TGetProfileResult;
@@ -24,6 +26,7 @@ import java.util.Arrays;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PathParam;
 
@@ -66,6 +69,8 @@ public class ProfileREST {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public ProfileResultResponse getAll() throws TException, InterruptedException, Exception {
+        TestPerformance.getInstance().calTotalNumReq("insert.rest");
+        long start = System.currentTimeMillis();
         TGetProfileResult profile = profileClient.getAll();
         ProfileResultResponse res = new ProfileResultResponse();
         res.setErr(profile.getErr());
@@ -74,6 +79,7 @@ public class ProfileREST {
             profileResponses.add(new ProfileResponse(x.getId(), x.getName(), x.getAge()));
         }
         res.setProfile(profileResponses);
+        TestPerformance.getInstance().calTotalTimeProcess("insert.rest", System.currentTimeMillis() - start);
         return res;
     }
 
@@ -99,8 +105,9 @@ public class ProfileREST {
             throws TException, InterruptedException, Exception {
         QueingModel queingModel = QueingModel.getInstance();
         TGetProfileResult oldResultResponse = profileClient.get(id);
-        if(oldResultResponse.getErr() == ErrorType.NOT_FOUND.getValue())
+        if (oldResultResponse.getErr() == ErrorType.NOT_FOUND.getValue()) {
             return "Item is not exist to update";
+        }
         Profile oldDto = oldResultResponse.getProfile().get(0);
         Profile updatedDto = new Profile(id, dtoRequest.getName(), dtoRequest.getAge());
         LRU.getInstace().refer(oldDto, updatedDto);
@@ -113,13 +120,26 @@ public class ProfileREST {
     @Path("/{id}")
     public String delete(@PathParam("id") long id) throws TException, InterruptedException, Exception {
         TGetProfileResult oldResultResponse = profileClient.get(id);
-        if(oldResultResponse.getErr() == ErrorType.NOT_FOUND.getValue())
+        if (oldResultResponse.getErr() == ErrorType.NOT_FOUND.getValue()) {
             return "Item is not exist to delete";
+        }
         Profile oldDto = oldResultResponse.getProfile().get(0);
         LRU.getInstace().remove(oldDto);
         QueingModel queingModel = QueingModel.getInstance();
         Job job = new Job("profile.remove", id);
         queingModel.putJob(job);
         return "Sent!";
+    }
+
+    // for performance test
+    @GET
+    @Path("/statistic")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<StatisticDTO> statistic() {
+        TestPerformance test = TestPerformance.getInstance();
+        test.printStatistic();
+        Map<String, StatisticDTO> stas = test.getStatistic();
+        List<StatisticDTO> result = new ArrayList<StatisticDTO>(stas.values());
+        return result;
     }
 }
