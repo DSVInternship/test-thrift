@@ -6,7 +6,6 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.servlet.http.HttpServletResponse;
 
 import static org.eclipse.jetty.servlet.ServletContextHandler.NO_SESSIONS;
 
@@ -29,6 +28,8 @@ public class JettyServer {
                 "jersey.config.server.provider.packages",
                 "example.rest"
         );
+        
+        //servletHolder.setInitParameter("com.sun.jersey.api.json.POJOMappingFeature", "true");
 
         try {
             server.start();

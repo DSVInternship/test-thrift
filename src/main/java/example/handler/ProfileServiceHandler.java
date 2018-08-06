@@ -11,7 +11,6 @@ import example.thrift.ProfileService;
 import example.thrift.TGetProfileResult;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.thrift.TException;
 
@@ -25,7 +24,6 @@ public class ProfileServiceHandler implements ProfileService.Iface {
 
     @Override
     public TGetProfileResult get(long id) throws TException {
-        System.out.println("invoke get hanlder");
         try {
             return dao.get(id);
         } catch (ClassNotFoundException | IOException e) {

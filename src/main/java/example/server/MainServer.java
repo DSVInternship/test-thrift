@@ -44,6 +44,9 @@ public class MainServer {
 				} catch (InterruptedException | TException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}        		
         	}
         }.start();

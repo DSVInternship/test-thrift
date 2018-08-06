@@ -20,8 +20,8 @@ import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.apache.thrift.transport.TTransportFactory;
 import org.apache.thrift.protocol.TBinaryProtocol.Factory;
+
 public class ThriftServer {
 
     public ProfileServiceHandler handler;
@@ -32,16 +32,7 @@ public class ThriftServer {
         try {
             handler = new ProfileServiceHandler();
             processor = new ProfileService.Processor(handler);
-            //simpleServer(processor);
             threadPoolServer(processor);
-//            Runnable simple = new Runnable() {
-//                public void run() {
-//                    simpleServer(processor);
-//                }
-//            };
-//
-//            new Thread(simple).start();
-
         } catch (Exception x) {
             x.printStackTrace();
         }
@@ -52,7 +43,7 @@ public class ThriftServer {
             TServerTransport serverTransport = new TServerSocket(9090);
             TServer server = new TSimpleServer(new Args(serverTransport).processor(processor));
             //TServer server = new TThreadPoolServer(new Args(serverTransport).processor(processor));
-            
+
             System.out.println("Starting thrift server at port 9090");
 
             server.serve();
@@ -60,32 +51,32 @@ public class ThriftServer {
             e.printStackTrace();
         }
     }
-    
-    private void threadPoolServer(ProfileService.Processor processor) throws TTransportException {
-       try {
-    	TServerTransport serverTransport = new TServerSocket(9090);
-        Factory proFactory=new TBinaryProtocol.Factory();
-    	TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
-        options.minWorkerThreads = 10;
-        options.processor(processor);
-        options.protocolFactory(proFactory);
-        
-        TServer server = new TThreadPoolServer(options);
-        System.out.println("Starting thrift server at port 9090");
 
-        server.serve();
-       }catch(Exception e) {
-    	   e.printStackTrace();
-       }
+    private void threadPoolServer(ProfileService.Processor processor) throws TTransportException {
+        try {
+            TServerTransport serverTransport = new TServerSocket(9090);
+            Factory proFactory = new TBinaryProtocol.Factory();
+            TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
+            options.minWorkerThreads = 10;
+            options.processor(processor);
+            options.protocolFactory(proFactory);
+
+            TServer server = new TThreadPoolServer(options);
+            System.out.println("Starting thrift server at port 9090");
+
+            server.serve();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    
+
     public static void main(String[] args) {
-      ThriftServer thriftServer = new ThriftServer();
-      new Thread() {
-          public void run() {
-              thriftServer.startServer();
-          }
-      }.start();
-	}
-    
+        ThriftServer thriftServer = new ThriftServer();
+        new Thread() {
+            public void run() {
+                thriftServer.startServer();
+            }
+        }.start();
+    }
+
 }

@@ -18,10 +18,11 @@ public class Profile implements org.apache.thrift.TBase<Profile, Profile._Fields
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ProfileStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ProfileTupleSchemeFactory();
 
+  private static final long serialVersionUID = 1000032464685005306L;
   public long id; // required
   public java.lang.String name; // required
   public int age; // required
-
+  
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ID((short)1, "id"),

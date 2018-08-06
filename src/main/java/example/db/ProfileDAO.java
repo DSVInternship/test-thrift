@@ -63,13 +63,14 @@ public class ProfileDAO {
     }
 
     public TGetProfileResult getAll() throws IOException, ClassNotFoundException {
-    	TGetProfileResult result = null;
         List<Profile> profiles = new ArrayList<>();
         Profile tmp;
         DB db = KyotoCabinetConnection.getConnection("profile.kch");
         Cursor cur = db.cursor();
         cur.jump();
+        
         byte[][] recByte;
+        
         while ((recByte = cur.get(true)) != null) {
         	tmp = (Profile)ByteConverter.convertFromBytes(recByte[1]);
         	profiles.add(tmp);
@@ -78,7 +79,7 @@ public class ProfileDAO {
         cur.disable();
         KyotoCabinetConnection.closeConnection(db);
         
-        result = new TGetProfileResult();
+        TGetProfileResult result = new TGetProfileResult();
         result.setErr(ErrorType.SUCCESS.getValue());
         result.setProfile(profiles);
         return result;

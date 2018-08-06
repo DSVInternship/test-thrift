@@ -37,12 +37,6 @@ public class QueingModel {
 
     public Job getJob() throws InterruptedException {
         Job job = jobQueue.poll(5, TimeUnit.MILLISECONDS);
-        if (job == null) {
-            System.out.println("blocking queue is empty");
-            synchronized (this) {
-                wait();
-            }
-        }
         return job;
     }
 
@@ -57,7 +51,7 @@ public class QueingModel {
         return result;
     }
 
-    public void startQueingModel() throws InterruptedException, TException {
+    public void startQueingModel() throws InterruptedException, TException, Exception {
         String method;
         Object data;
         while (true) {
