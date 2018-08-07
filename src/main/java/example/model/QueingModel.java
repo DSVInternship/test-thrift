@@ -24,7 +24,7 @@ public class QueingModel {
     // private List<Worker> list ;
 
     private QueingModel() {
-        jobQueue = new ArrayBlockingQueue<Job>(5);
+        jobQueue = new ArrayBlockingQueue<Job>(200);
         workerClient = new ProfileClient();
     }
 
@@ -36,15 +36,12 @@ public class QueingModel {
     }
 
     public Job getJob() throws InterruptedException {
-        Job job = jobQueue.poll(5, TimeUnit.MILLISECONDS);
+        Job job = jobQueue.poll(2, TimeUnit.SECONDS);
         return job;
     }
 
     public boolean putJob(Job job) throws InterruptedException {
-        boolean result = jobQueue.offer(job, 5, TimeUnit.MILLISECONDS);
-        synchronized (this) {
-            notify();
-        }
+        boolean result = jobQueue.offer(job, 2, TimeUnit.SECONDS);
         if (!result) {
             System.out.println("blocking queue is full");
         }

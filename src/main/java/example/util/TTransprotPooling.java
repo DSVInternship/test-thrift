@@ -37,7 +37,7 @@ public class TTransprotPooling {
 
         // create connection 
         for (int i = 0; i < MAX_CONNECTION; i++) {
-            availableConnection.offer(createTransport(host, port), 1, TimeUnit.MILLISECONDS);
+            availableConnection.offer(createTransport(host, port), 2, TimeUnit.SECONDS);
         }
         isConfig = true;
     }
@@ -53,12 +53,12 @@ public class TTransprotPooling {
     }
 
     public TTransport getConnection() throws InterruptedException, Exception {
-        TTransport connection = availableConnection.poll(1, TimeUnit.MILLISECONDS);
+        TTransport connection = availableConnection.poll(2, TimeUnit.SECONDS);
         if (connection == null) {
             throw new Exception("All connection are used.");
 //			return null;
         } else {
-            usedConnection.offer(connection, 3, TimeUnit.MILLISECONDS);
+            usedConnection.offer(connection, 2, TimeUnit.SECONDS);
             return connection;
         }
     }
@@ -66,7 +66,7 @@ public class TTransprotPooling {
     public boolean closeConnection(TTransport connection) throws InterruptedException {
         if (connection != null) {
             usedConnection.remove(connection);
-            availableConnection.offer(connection, 5, TimeUnit.MILLISECONDS);
+            availableConnection.offer(connection, 2, TimeUnit.SECONDS);
             return true;
         }
         return false;

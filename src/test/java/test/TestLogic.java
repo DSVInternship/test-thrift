@@ -66,7 +66,7 @@ public class TestLogic {
     }
 
     @Test
-    public void testInsertUpdateDelete() throws UnsupportedEncodingException, IOException {
+    public void testInsertUpdateDelete() throws UnsupportedEncodingException, IOException, InterruptedException {
         String url = "http://localhost:9000/api/profile";
         com.google.gson.Gson gson = new com.google.gson.Gson();
         ProfileResponse mock = new ProfileResponse(1234567l, "zxcv", 2000);
@@ -80,7 +80,7 @@ public class TestLogic {
         requestCreate.setEntity(params);
         HttpResponse result = httpClient.execute(requestCreate);
         String postRes = EntityUtils.toString(result.getEntity(), "UTF-8");
-
+        Thread.sleep(1000);
         System.out.println("postRes");
         // test create 
         ProfileResultResponse resultCreate = httpGet(url + "/1234567");
@@ -98,6 +98,7 @@ public class TestLogic {
         requestUpdate.addHeader("content-type", "application/json");
         requestUpdate.setEntity(paramsUpdate);
         httpClient.execute(requestUpdate);
+        Thread.sleep(1000);
 
         // test update
         ProfileResultResponse resultUpdate = httpGet(url + "/1234567");
@@ -110,6 +111,8 @@ public class TestLogic {
         // delete 
         HttpDelete requestDelete = new HttpDelete(url + "/1234567");
         httpClient.execute(requestDelete);
+        Thread.sleep(1000);
+
         //test deletes
         ProfileResultResponse resultDelete = httpGet(url + "/1234567");
         ProfileResultResponse expectedDelete = new ProfileResultResponse();

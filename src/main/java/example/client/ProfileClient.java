@@ -5,6 +5,7 @@
  */
 package example.client;
 
+import example.test.TestPerformance;
 import example.thrift.Profile;
 import example.thrift.ProfileService;
 import example.thrift.TGetProfileResult;
@@ -42,21 +43,28 @@ public class ProfileClient {
 
     public boolean insert(Profile profile) throws TException, InterruptedException, Exception {
         //Thread.sleep(6000);
+        TestPerformance.getInstance().calTotalNumReq("insert.thrift");
+        long start = System.nanoTime();
         TTransport transport = TTransprotPooling.getInstace().getConnection();
         TProtocol protocol = new TBinaryProtocol(transport);
         ProfileService.Client client = new ProfileService.Client(protocol);
         boolean profileRes = client.insert(profile);
         TTransprotPooling.getInstace().closeConnection(transport);
+        TestPerformance.getInstance().calTotalTimeProcess("insert.thrift", (System.nanoTime() - start) / 1000);
+
         return profileRes;
     }
 
     public boolean update(Profile profile) throws TException, InterruptedException, Exception {
-       // Thread.sleep(6000);
+        // Thread.sleep(6000);
+        TestPerformance.getInstance().calTotalNumReq("update.thrift");
+        long start = System.nanoTime();
         TTransport transport = TTransprotPooling.getInstace().getConnection();
         TProtocol protocol = new TBinaryProtocol(transport);
         ProfileService.Client client = new ProfileService.Client(protocol);
         boolean profileRes = client.update(profile);
         TTransprotPooling.getInstace().closeConnection(transport);
+        TestPerformance.getInstance().calTotalTimeProcess("insert.thrift", (System.nanoTime() - start) / 1000);
         return profileRes;
     }
 

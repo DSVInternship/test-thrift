@@ -5,11 +5,13 @@
  */
 package example.rest.response;
 
+import java.io.Serializable;
+
 /**
  *
  * @author root
  */
-public class ProfileResponse {
+public class ProfileResponse implements Serializable{
 
     public long id; // required
     public java.lang.String name; // required

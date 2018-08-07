@@ -24,7 +24,7 @@ public class ProfileDAO {
 
     public boolean insert(Profile profile) throws IOException {
         //System.out.println("profile insert " + profile);
-        DB db = KyotoCabinetConnection.getConnection("profile.kch");
+        DB db = KyotoCabinetConnection.getConnection("profile.kch", "w");
         db.set(ByteConverter.convertToBytes(profile.getId()), ByteConverter.convertToBytes(profile));
         KyotoCabinetConnection.closeConnection(db);
         return true;
@@ -32,7 +32,7 @@ public class ProfileDAO {
 
     public TGetProfileResult get(long id) throws IOException, ClassNotFoundException {
         //System.out.println("Profile get " + id);
-        DB db = KyotoCabinetConnection.getConnection("profile.kch");
+        DB db = KyotoCabinetConnection.getConnection("profile.kch", "r");
         byte[] byteProfile = db.get(ByteConverter.convertToBytes(id));
         TGetProfileResult result ;
         if(byteProfile == null)
@@ -48,7 +48,7 @@ public class ProfileDAO {
 
     public boolean update(Profile profile) throws TException, IOException {
        // System.err.println("profile update " + profile);
-        DB db = KyotoCabinetConnection.getConnection("profile.kch");
+        DB db = KyotoCabinetConnection.getConnection("profile.kch", "w");
         boolean result = db.replace(ByteConverter.convertToBytes(profile.getId()), ByteConverter.convertToBytes(profile));
         KyotoCabinetConnection.closeConnection(db);
         return result;
@@ -56,7 +56,7 @@ public class ProfileDAO {
 
     public boolean remove(long id) throws TException, IOException {
        // System.out.println("profile remove");
-        DB db = KyotoCabinetConnection.getConnection("profile.kch");
+        DB db = KyotoCabinetConnection.getConnection("profile.kch", "w");
         boolean result = db.remove(ByteConverter.convertToBytes(id));
         KyotoCabinetConnection.closeConnection(db);
         return result;
@@ -65,7 +65,7 @@ public class ProfileDAO {
     public TGetProfileResult getAll() throws IOException, ClassNotFoundException {
         List<Profile> profiles = new ArrayList<>();
         Profile tmp;
-        DB db = KyotoCabinetConnection.getConnection("profile.kch");
+        DB db = KyotoCabinetConnection.getConnection("profile.kch", "r");
         Cursor cur = db.cursor();
         cur.jump();
         
@@ -84,6 +84,7 @@ public class ProfileDAO {
         result.setProfile(profiles);
         return result;
     }
+    
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, TException {
         ProfileDAO dao = new ProfileDAO();

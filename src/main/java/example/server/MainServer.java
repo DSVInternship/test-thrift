@@ -53,7 +53,7 @@ public class MainServer {
         }.start();
 
         // start connection pooling 
-        TTransprotPooling.getInstace().config(2, "localhost", 9090);
+        TTransprotPooling.getInstace().config(20, "localhost", 9090);
 
         System.out.println("number connection pooling: " + TTransprotPooling.getInstace().getNumberFreeConnection());
         
@@ -61,6 +61,8 @@ public class MainServer {
         TestPerformance test = TestPerformance.getInstance();
         test.addService("insert.rest");
         test.addService("insert.thrift");
-        test.addService("update");
+        test.addService("getAll.rest");
+        test.addService("update.rest");
+        test.addService("update.thrift");
     }
 }
