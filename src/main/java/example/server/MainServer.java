@@ -61,7 +61,7 @@ public class MainServer {
         TestPerformance test = TestPerformance.getInstance();
         test.addService("insert.rest");
         test.addService("insert.thrift");
-        test.addService("getAll.rest");
+        test.addService("get.rest");
         test.addService("update.rest");
         test.addService("update.thrift");
     }

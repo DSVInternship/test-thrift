@@ -101,7 +101,7 @@ public class UserEmulator {
             ProfileResponse mock = new ProfileResponse(0l, "l articles, such as Ramchander Varadarajan's \"Question of the Week No. 107\" (Sun Microsystems, September 2000) and Tony Sintes's \"Memory Matters\" (JavaWorld, December 2001), detail that idea. Unfortunately, the former article's solution fails because the implementation employs a wrong Runtime method, while the latter article's solution has its own imperfections:Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of \"de Finibus Bonorum et Malorum\" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, \"Lorem ipsum dolor sit amet..\", comes from a line in section 1.10.32Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of \"de Finibus Bonorum et Malorum\" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, \"Lorem ipsum dolor sit amet..\", comes from a line in section 1.10.32", 2000);
             // random change size
             double salt = Math.random();
-            long selectedId = (long) Math.ceil(salt * listId.size());
+            int selectedId = (int) Math.ceil(salt * listId.size());
             int subString = (int) Math.ceil(salt * mock.getName().length());
             mock.setId(selectedId);
             mock.setName(mock.getName() + mock.getName().substring(subString));
@@ -109,7 +109,7 @@ public class UserEmulator {
 
             // Update
             CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-            HttpPut requestCreate = new HttpPut(url);
+            HttpPut requestCreate = new HttpPut(url + "/" + listId.get(selectedId));
             StringEntity params = new StringEntity(mockString);
             requestCreate.addHeader("content-type", "application/json");
             requestCreate.setEntity(params);
@@ -123,23 +123,27 @@ public class UserEmulator {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException {
         UserEmulator emulator = new UserEmulator();
         String url = "http://localhost:9000/api/profile";
-        int size = 300000;
+        int size = 200000;
+        //size = 1;
         ExecutorService executor = Executors.newFixedThreadPool(5);
-
+        List<Long> listId = emulator.getListKey(30);
         for (int i = 0; i < size; i++) {
             //while(true){
-            Thread.sleep(10);
+            Thread.sleep(100);
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
                     //test get 
-                    emulator.httpGet(url + "/1");
+                   //emulator.httpGet(url + "/1");
 
                     // test post 
                     //emulator.httpPost(url);
+                    
+                    // test put 
+                    emulator.httpPut(url, listId);
                 }
             });
         }

@@ -64,7 +64,7 @@ public class ProfileClient {
         ProfileService.Client client = new ProfileService.Client(protocol);
         boolean profileRes = client.update(profile);
         TTransprotPooling.getInstace().closeConnection(transport);
-        TestPerformance.getInstance().calTotalTimeProcess("insert.thrift", (System.nanoTime() - start) / 1000);
+        TestPerformance.getInstance().calTotalTimeProcess("update.thrift", (System.nanoTime() - start) / 1000);
         return profileRes;
     }
 

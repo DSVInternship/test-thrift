@@ -38,7 +38,7 @@ public class ProfileREST {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public ProfileResultResponse get(@PathParam("id") long id) throws TException, InterruptedException, Exception {
-        TestPerformance.getInstance().calTotalNumReq("getAll.rest");
+        TestPerformance.getInstance().calTotalNumReq("get.rest");
         long start = System.nanoTime();
         Profile profile = null; //profileClient.get(id);
         TGetProfileResult tProfileResult = null;
@@ -63,7 +63,7 @@ public class ProfileREST {
                 LRU.getInstace().refer(tProfileResult.getProfile().get(0));
             }
         }
-        TestPerformance.getInstance().calTotalTimeProcess("getAll.rest", (System.nanoTime() - start) / 1000);
+        TestPerformance.getInstance().calTotalTimeProcess("get.rest", (System.nanoTime() - start) / 1000);
         ProfileResultResponse result = ProfileResultResponse.parseFromTGetProfileResult(tProfileResult);
         return result;
     }
@@ -107,6 +107,8 @@ public class ProfileREST {
     @Path("/{id}")
     public String update(@PathParam("id") long id, ProfileResponse dtoRequest)
             throws TException, InterruptedException, Exception {
+        TestPerformance.getInstance().calTotalNumReq("update.rest");
+        long start = System.nanoTime();
         QueingModel queingModel = QueingModel.getInstance();
         TGetProfileResult oldResultResponse = profileClient.get(id);
         if (oldResultResponse.getErr() == ErrorType.NOT_FOUND.getValue()) {
@@ -117,6 +119,7 @@ public class ProfileREST {
         LRU.getInstace().refer(oldDto, updatedDto);
         Job job = new Job("profile.update", updatedDto);
         queingModel.putJob(job);
+        TestPerformance.getInstance().calTotalTimeProcess("update.rest", (System.nanoTime() - start) / 1000);
         return "Sent!";
     }
 
